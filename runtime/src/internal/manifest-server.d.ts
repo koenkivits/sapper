@@ -7,7 +7,7 @@ export const build_dir: string;
 export const dev: boolean;
 export const manifest: Manifest;
 
-export { SapperRequest, SapperResponse } from '@sapper/server';
+export { SapperRequest, SapperResponse, SapperNext, SapperHandler } from '@sapper/server';
 
 export interface SSRComponentModule {
 	default: SSRComponent;
@@ -42,10 +42,12 @@ export interface ManifestPagePart {
 	params?: (match: RegExpMatchArray | null) => Record<string, string>;
 }
 
-export type Handler = (req: SapperRequest, res: SapperResponse, next: () => void) => void;
+export type ErrorHandler = (err: any, req: SapperRequest, res: SapperResponse, next: SapperNext) => void;
+
+export type Handler = SapperHandler | ErrorHandler;
 
 export interface ServerRoute {
 	pattern: RegExp;
-	handlers: Record<string, Handler>;
+	handlers: Record<string, SapperHandler>;
 	params: (match: RegExpMatchArray) => Record<string, string>;
 }

@@ -1,7 +1,11 @@
-import { SapperRequest, SapperResponse, ServerRoute } from '@sapper/internal/manifest-server';
+import { SapperRequest, SapperResponse, SapperNext, ServerRoute } from '@sapper/internal/manifest-server';
 
 export function get_server_route_handler(routes: ServerRoute[]) {
-	async function handle_route(route: ServerRoute, req: SapperRequest, res: SapperResponse, next: () => void) {
+	async function handle_route(route: ServerRoute, req: SapperRequest, res: SapperResponse, next: SapperNext) {
+        const handle_next = (err?: Error) => {
+            process.nextTick(() => next(err));
+        };
+
 		req.params = route.params(route.pattern.exec(req.path));
 
 		const method = req.method.toLowerCase();
@@ -42,24 +46,14 @@ export function get_server_route_handler(routes: ServerRoute[]) {
 				};
 			}
 
-			const handle_next = (err?: Error) => {
-				if (err) {
-					res.statusCode = 500;
-					res.end(err.message);
-				} else {
-					process.nextTick(next);
-				}
-			};
-
 			try {
 				await handle_method(req, res, handle_next);
 			} catch (err) {
-				console.error(err);
 				handle_next(err);
 			}
 		} else {
 			// no matching handler for method
-			process.nextTick(next);
+            handle_next();
 		}
 	}
 
