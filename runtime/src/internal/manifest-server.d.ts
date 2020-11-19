@@ -25,9 +25,10 @@ export interface SSRComponent {
 export interface Manifest {
 	server_routes: ServerRoute[];
 	ignore: RegExp[];
-	root_comp: SSRComponentModule
-	error: SSRComponent
-	pages: ManifestPage[]
+	root_comp: SSRComponentModule;
+	error: SSRComponent;
+	error_handler?: ErrorHandler;
+	pages: ManifestPage[];
 }
 
 export interface ManifestPage {
@@ -42,7 +43,11 @@ export interface ManifestPagePart {
 	params?: (match: RegExpMatchArray | null) => Record<string, string>;
 }
 
-export type ErrorHandler = (err: any, req: SapperRequest, res: SapperResponse, next: SapperNext) => void;
+export interface HttpError extends Error {
+	statusCode?: number;
+}
+
+export type ErrorHandler = (err: any, req: SapperRequest, res: SapperResponse, next?: SapperNext) => void;
 
 export type Handler = SapperHandler | ErrorHandler;
 
