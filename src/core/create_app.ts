@@ -174,6 +174,8 @@ function generate_server_manifest(
 
 	if (manifest_data.error_handler_file) {
 		imports.push(`import error_handler from ${stringify(posixify(`${path_to_routes}/${manifest_data.error_handler_file}`))};`);
+	} else {
+		imports.push('const error_handler = null;');
 	}
 
 	const component_lookup: Record<string, number> = {};
