@@ -94,12 +94,12 @@ export function compose_handlers(ignore: IgnoreValue, handlers: Handler[], error
 	}
 
 	return !ignore
-		? (req, res, next) => nth_handler(0, req, res, next, (err) => error_handler(err, req, res))
+		? (req, res, next) => nth_handler(0, req, res, next, (err) => error_handler(err, req, res, next))
 		: (req, res, next) => {
 			if (should_ignore(req.path, ignore)) {
 				next();
 			} else {
-				nth_handler(0, req, res, next, (err) => error_handler(err, req, res));
+				nth_handler(0, req, res, next, (err) => error_handler(err, req, res, next));
 			}
 		};
 }

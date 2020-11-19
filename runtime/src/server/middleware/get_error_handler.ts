@@ -15,66 +15,82 @@ export function get_error_handler(
 ): Handler {
 	const { error_handler, error: error_route } = manifest;
 
-    function render_plain(err, req, res) {
-        if (!dev) {
-            if (res.statusCode === 404) {
-                return res.end('Not found');
-            } else {
-                return res.end('Internal server error');
-            }
-        }
+	function on_error(err) {
+		if (err instanceof Error && err.stack) {
+			err.stack = sourcemap_stacktrace(err.stack);
+		}
 
-        let errText = err.toString();
-        if (err.stack) {
-            errText += `\n${err.stack}`;
-        }
+		console.error(err);
+	}
 
-        const contentType = res.getHeader('Content-Type');
-        const sendsHtml = (
-            !contentType ||
-            contentType.toLowerCase().includes('text/html')
-        );
-        const needsHtml = (sendsHtml && res.headersSent);
+	function render_plain(err, req, res) {
+		if (!dev) {
+			if (res.statusCode === 404) {
+				return res.end('Not found');
+			} else {
+				return res.end('Internal server error');
+			}
+		}
 
-        if (needsHtml) {
-            errText = escape_html(errText);
-        } else {
-            res.setHeader('Content-Type', 'text/plain');
-        }
+		let errText = err.toString();
+		if (err.stack) {
+			errText += `\n${err.stack}`;
+		}
 
-        res.end(errText);
-    }
+		const contentType = res.getHeader('Content-Type');
+		const sendsHtml = (
+			!contentType ||
+			contentType.toLowerCase().includes('text/html')
+		);
+		const needsHtml = (sendsHtml && res.headersSent);
 
-    function render_page(err, req, res) {
+		if (needsHtml) {
+			errText = escape_html(errText);
+		} else {
+			res.setHeader('Content-Type', 'text/plain');
+		}
+
+		res.end(errText);
+	}
+
+	async function default_error_handler(err, req, res) {
+		on_error(err);
+
+		res.statusCode = err.status ?? err.statusCode ?? 500;
+
+		try {
+			await render_page(err, req, res);
+		} catch (renderErr) {
+			on_error(renderErr);
+			await render_plain(err, req, res);
+		}
+	}
+
+	function render_page(err, req, res) {
 		return page_renderer({
 			pattern: null,
 			parts: [
 				{ name: null, component: { default: error_route } }
 			]
 		}, req, res, err);
-    }
+	}
 
 	return async function handle_error(err: any, req: SapperRequest, res: SapperResponse, next: SapperNext) {
 		err = err || 'Unknown error';
 
-        /*
-        const handle_next = (err?: any) => {
-            process.nextTick(() => next?.(err));
-        };*/
+		if (error_handler) {
+			try {
+				await error_handler(err, req, res, (handler_err?: any) => {
+					process.nextTick(() => default_error_handler(handler_err || err, req, res));
+				});
+			} catch (handler_err) {
+				on_error(handler_err);
 
-        if (err instanceof Error && err.stack) {
-            err.stack = sourcemap_stacktrace(err.stack);
-        }
-
-        console.error(err);
-
-        res.statusCode = err.status ?? err.statusCode ?? 500;
-
-        try {
-            await render_page(err, req, res);
-        } catch (renderErr) {
-            await render_plain(err, req, res);
-        }
+				default_error_handler(err, req, res);
+			}
+		} else {
+			default_error_handler(err, req, res);
+		}
 	};
 }
 

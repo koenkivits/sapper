@@ -83,7 +83,7 @@ declare module '@sapper/server' {
 	export interface MiddlewareOptions {
 		session?: (req: SapperRequest, res: SapperResponse) => unknown;
 		ignore?: Ignore;
-        trapErrors?: boolean;
+		trapErrors?: boolean;
 	}
 
 	export function middleware(
@@ -100,7 +100,6 @@ declare module '@sapper/service-worker' {
 }
 
 declare module '@sapper/common' {
-
 	import type fetchType from 'node-fetch';
 	export type FetchResponse = Response | ReturnType<typeof fetchType>;
 
