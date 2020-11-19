@@ -11,7 +11,7 @@ export function get_page_handler(
 ): SapperHandler {
 	const { pages } = manifest;
 
-	return async function handle_page(req, res, next) {
+	return async function find_route(req, res, next) {
 		const req_path = req.path === '/service-worker-index.html' ? '/' : req.path;
 
 		const page = pages.find(p => p.pattern.test(req_path));

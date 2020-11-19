@@ -2,9 +2,9 @@ import { SapperRequest, SapperResponse, SapperNext, ServerRoute } from '@sapper/
 
 export function get_server_route_handler(routes: ServerRoute[]) {
 	async function handle_route(route: ServerRoute, req: SapperRequest, res: SapperResponse, next: SapperNext) {
-        const handle_next = (err?: Error) => {
-            process.nextTick(() => next(err));
-        };
+		const handle_next = (err?: Error) => {
+			process.nextTick(() => next(err));
+		};
 
 		req.params = route.params(route.pattern.exec(req.path));
 
@@ -53,11 +53,11 @@ export function get_server_route_handler(routes: ServerRoute[]) {
 			}
 		} else {
 			// no matching handler for method
-            handle_next();
+			handle_next();
 		}
 	}
 
-	return function find_route(req: SapperRequest, res: SapperResponse, next: () => void) {
+	return function find_route(req: SapperRequest, res: SapperResponse, next: SapperNext) {
 		for (const route of routes) {
 			if (route.pattern.test(req.path)) {
 				handle_route(route, req, res, next);
