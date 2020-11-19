@@ -80,15 +80,16 @@ declare module '@sapper/server' {
 
 	export type SapperHandler = (req: SapperRequest, res: SapperResponse, next: SapperNext) => void;
 
+	export type SapperErrorHandler = (err?: any, req: SapperRequest, res: SapperResponse, next: SapperNext) => void;
+
 	export interface MiddlewareOptions {
 		session?: (req: SapperRequest, res: SapperResponse) => unknown;
 		ignore?: Ignore;
-		trapErrors?: boolean;
 	}
 
 	export function middleware(
 		opts?: MiddlewareOptions
-	): (req: SapperRequest, res: SapperResponse, next: SapperNext) => void;
+	): SapperHandler;
 }
 
 declare module '@sapper/service-worker' {

@@ -1,14 +1,14 @@
 import {
 	Manifest,
 	HttpError,
-	Handler
+	SapperHandler
 } from '@sapper/internal/manifest-server';
 import { PageRenderer } from './get_page_renderer';
 
 export function get_page_handler(
 	manifest: Manifest,
 	render_page: PageRenderer
-): Handler {
+): SapperHandler {
 	const { pages } = manifest;
 
 	return async function handle_page(req, res, next) {

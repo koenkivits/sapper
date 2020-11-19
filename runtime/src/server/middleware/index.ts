@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import mime from 'mime/lite';
-import { Handler, SapperRequest, SapperResponse, SapperNext, ErrorHandler, build_dir, dev, manifest } from '@sapper/internal/manifest-server';
+import { SapperRequest, SapperResponse, SapperNext, SapperHandler, SapperErrorHandler, build_dir, dev, manifest } from '@sapper/internal/manifest-server';
 import { get_page_renderer } from './get_page_renderer';
 import { get_server_route_handler } from './get_server_route_handler';
 import { get_page_handler } from './get_page_handler';
@@ -73,7 +73,7 @@ export default function middleware(opts: {
 	].filter(Boolean), error_handler);
 }
 
-export function compose_handlers(ignore: IgnoreValue, handlers: Handler[], error_handler: ErrorHandler): Handler {
+export function compose_handlers(ignore: IgnoreValue, handlers: SapperHandler[], error_handler: SapperErrorHandler): SapperHandler {
 	const total = handlers.length;
 
 	function nth_handler(n: number, req: SapperRequest, res: SapperResponse, next: SapperNext, error_next: SapperNext) {
@@ -115,7 +115,7 @@ export function serve({ prefix, pathname, cache_control }: {
 	prefix?: string,
 	pathname?: string,
 	cache_control: string
-}): Handler {
+}): SapperHandler {
 	const filter = pathname
 		? (req: SapperRequest) => req.path === pathname
 		: (req: SapperRequest) => req.path.startsWith(prefix);

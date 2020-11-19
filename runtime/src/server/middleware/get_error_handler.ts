@@ -4,7 +4,7 @@ import {
 	SapperRequest,
 	SapperResponse,
 	SapperNext,
-	Handler,
+	SapperErrorHandler,
 	dev
 } from '@sapper/internal/manifest-server';
 import { PageRenderer } from './get_page_renderer';
@@ -12,7 +12,7 @@ import { PageRenderer } from './get_page_renderer';
 export function get_error_handler(
 	manifest: Manifest,
 	page_renderer: PageRenderer
-): Handler {
+): SapperErrorHandler {
 	const { error_handler, error: error_route } = manifest;
 
 	function on_error(err) {
