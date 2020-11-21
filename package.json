@@ -1,9 +1,9 @@
 {
-  "name": "sapper",
+  "name": "@koenkivits/sapper",
   "version": "0.28.10",
-  "description": "The next small thing in web development, powered by Svelte",
+  "description": "Fork of the next small thing in web development, powered by Svelte",
   "bin": {
-    "sapper": "./sapper"
+    "sapper": "sapper"
   },
   "files": [
     "*.js",
@@ -87,7 +87,10 @@
     "dev": "rollup -cw",
     "prepublishOnly": "npm test"
   },
-  "repository": "https://github.com/sveltejs/sapper",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sveltejs/sapper.git"
+  },
   "keywords": [
     "svelte",
     "isomorphic",
@@ -100,5 +103,6 @@
   "bugs": {
     "url": "https://github.com/sveltejs/sapper/issues"
   },
-  "homepage": "https://github.com/sveltejs/sapper#readme"
+  "homepage": "https://github.com/sveltejs/sapper#readme",
+  "main": "index.js"
 }
